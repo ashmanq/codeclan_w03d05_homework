@@ -71,22 +71,15 @@ class Film
     return customers.map {|customer| Customer.new(customer)}
   end
 
-  # Finds a film in the films table by searching for the film name
-  def find_movie(film_title)
-    sql = "SELECT * FROM films WHERE title = LOWER($1)"
-    values = [film_title]
-    films_result = SqlRunner.run(sql, values).first
-    p films_result
-    return nil if films_result == nil
-    return Film.new(films_result)
+  # Finds a film in the films table by searching for the id
+  def self.find(film_id)
+    sql = "SELECT * FROM films WHERE id= $1"
+    values = [film_id]
+    film_result = SqlRunner.run(sql, values)
+    return nil if film_result.first() == nil
+    return film_result.map {|film| Film.new(film)}
   end
 
-  # def self.find_film_screening(film_title, screen_time)
-  #
-  #   film = find_movie(film_title)
-  #
-  #
-  # end
 
   def customer_count_by_film()
     sql = "SELECT COUNT(*) FROM tickets WHERE film_id = $1"

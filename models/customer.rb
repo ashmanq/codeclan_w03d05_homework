@@ -83,29 +83,32 @@ class Customer
     end
   end
 
-#   def buy_ticket(film_name, time)
-#
-#     film_result = Film.find(film_name)
-#
-#     if film_result != nil
-#       price = film_result.price.to_i
-#       if can_afford?(price) # check if customer can afford it
-#         # take money from customer
-#         reduce_funds(price)
-#         self.update()
-#         # add customer to tickets table
-#         ticket = Ticket.new({'customer_id' => @id, 'film_id' => film_result.id})
-#         ticket.save()
-#       end
-#     else
-#       p "Film not found!"
-#     end
-#   end
-#
-#   def tickets()
-#     sql = "SELECT COUNT(*) FROM tickets WHERE customer_id = $1"
-#     values = [@id]
-#     no_of_tickets = SqlRunner.run(sql, values).first
-#     return no_of_tickets['count']
-#   end
+  # Method will purchase a film ticket using a screening id
+  def buy_ticket(screening)
+    # Gets film information using screening id
+
+    film = Screening.find_film(screening.id)
+
+    return 'Can\'t find screening!' if film ==  nil
+    return 'Screening full!'        if !screening.is_available?
+
+    price = film.price.to_i
+
+    return 'Can\'t afford ticket!'  if !can_afford?(price)
+
+    reduce_funds(price)
+    self.update()
+    ticket = Ticket.new({'customer_id' => @id,
+                         'film_id' => film.id,
+                         'screening_id' => screening.id})
+    ticket.save()
+    return 'ticket successfully purchased!'
+  end
+
+  def tickets()
+    sql = "SELECT COUNT(*) FROM tickets WHERE customer_id = $1"
+    values = [@id]
+    no_of_tickets = SqlRunner.run(sql, values).first
+    return no_of_tickets['count']
+  end
 end

@@ -68,6 +68,26 @@ class Screening
     return customers_result['count']
   end
 
+  def self.find(screening_id)
+    sql = "SELECT * FROM screenings WHERE id = $1"
+    values = [screening_id]
+    result = SqlRunner.run(sql, values)
+    return nil if result.first() == nil
+    return result.map {|screening| Screening.new(screening)}
+  end
+
+  def self.find_film(screening_id)
+    sql = "SELECT films.* FROM films
+           INNER JOIN screenings
+           ON films.id = screenings.film_id
+           WHERE screenings.id = $1"
+    values = [screening_id]
+    film_result = SqlRunner.run(sql, values)
+    return nil if film_result.first() == nil
+    return film_result.map {|film| Film.new(film)}.first
+  end
+
+
 
 
 
