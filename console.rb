@@ -24,14 +24,14 @@ film2.save()
 film3 = Film.new({'title' => 'Ghost In The Shell', 'price' => '6.00'})
 film3.save()
 
-tickets1 = Ticket.new({'customer_id' => customer1.id, 'film_id' => film1.id})
-tickets1.save()
-tickets2 = Ticket.new({'customer_id' => customer2.id, 'film_id' => film1.id})
-tickets2.save()
-tickets3 = Ticket.new({'customer_id' => customer3.id, 'film_id' => film2.id})
-tickets3.save()
-tickets4 = Ticket.new({'customer_id' => customer3.id, 'film_id' => film3.id})
-tickets4.save()
+# tickets1 = Ticket.new({'customer_id' => customer1.id, 'film_id' => film1.id})
+# tickets1.save()
+# tickets2 = Ticket.new({'customer_id' => customer2.id, 'film_id' => film1.id})
+# tickets2.save()
+# tickets3 = Ticket.new({'customer_id' => customer3.id, 'film_id' => film2.id})
+# tickets3.save()
+# tickets4 = Ticket.new({'customer_id' => customer3.id, 'film_id' => film3.id})
+# tickets4.save()
 
 
 

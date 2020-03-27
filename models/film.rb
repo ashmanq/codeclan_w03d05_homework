@@ -70,4 +70,13 @@ class Film
     return customers.map {|customer| Customer.new(customer)}
   end
 
+  def self.find(film_title)
+    sql = "SELECT * FROM films WHERE title = $1"
+    values = [film_title]
+    films_result = SqlRunner.run(sql, values).first
+    p films_result
+    return nil if films_result == nil
+    return Film.new(films_result)
+  end
+
 end
