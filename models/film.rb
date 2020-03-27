@@ -1,4 +1,5 @@
 require_relative('../db/sql_runner')
+require_relative('./screening')
 
 class Film
 
@@ -19,7 +20,7 @@ class Film
           )
           VALUES
           (
-            $1, $2
+            LOWER($1), $2
           )
           RETURNING id"
     values = [@title, @price]
@@ -31,13 +32,13 @@ class Film
     sql = "UPDATE films SET
            (
              title,
-             name
+             price
             ) =
             (
-              $1, $2
+              LOWER($1), $2
             )
             WHERE id = $3"
-    values = [@title, @name, @id]
+    values = [@title, @price, @id]
     SqlRunner.run(sql, values)
   end
 
@@ -70,8 +71,9 @@ class Film
     return customers.map {|customer| Customer.new(customer)}
   end
 
-  def self.find(film_title)
-    sql = "SELECT * FROM films WHERE title = $1"
+  # Finds a film in the films table by searching for the film name
+  def find_movie(film_title)
+    sql = "SELECT * FROM films WHERE title = LOWER($1)"
     values = [film_title]
     films_result = SqlRunner.run(sql, values).first
     p films_result
@@ -79,11 +81,38 @@ class Film
     return Film.new(films_result)
   end
 
-  def customer_count()
+  # def self.find_film_screening(film_title, screen_time)
+  #
+  #   film = find_movie(film_title)
+  #
+  #
+  # end
+
+  def customer_count_by_film()
     sql = "SELECT COUNT(*) FROM tickets WHERE film_id = $1"
     values = [@id]
     customers_result = SqlRunner.run(sql, values).first
     return customers_result['count']
+  end
+
+  def screenings()
+    sql = "SELECT screenings.* FROM screenings
+           INNER JOIN films
+           ON films.id = screenings.film_id
+           WHERE films.id = $1"
+    values = [@id]
+    screenings_results = SqlRunner.run(sql, values)
+    return screenings_results.map {|screening| Screening.new(screening)}
+  end
+
+  def most_popular_screening()
+    # find all screenings of film
+    film_screenings = screenings()
+    # get count of tickets for each screening
+    most_popular_screening = film_screenings.max_by {|screening| screening.ticket_count()}
+    # find maximum of all ticket counts
+    return nil if most_popular_screening == 0
+    return most_popular_screening.screen_time
   end
 
 end

@@ -1,4 +1,5 @@
 require_relative('../db/sql_runner')
+require_relative('./screening')
 
 class Customer
 
@@ -19,7 +20,7 @@ class Customer
           )
           VALUES
           (
-            $1, $2
+            LOWER($1), $2
           )
           RETURNING id"
     values = [@name, @funds]
@@ -34,7 +35,7 @@ class Customer
              funds
             ) =
             (
-              $1, $2
+              LOWER($1), $2
             )
             WHERE id = $3"
     values = [@name, @funds, @id]
@@ -82,29 +83,29 @@ class Customer
     end
   end
 
-  def buy_ticket(film_name)
-
-    film_result = Film.find(film_name)
-
-    if film_result != nil
-      price = film_result.price.to_i
-      if can_afford?(price) # check if customer can afford it
-        # take money from customer
-        reduce_funds(price)
-        self.update()
-        # add customer to tickets table
-        ticket = Ticket.new({'customer_id' => @id, 'film_id' => film_result.id})
-        ticket.save()
-      end
-    else
-      p "Film not found!"
-    end
-  end
-
-  def tickets()
-    sql = "SELECT COUNT(*) FROM tickets WHERE customer_id = $1"
-    values = [@id]
-    no_of_tickets = SqlRunner.run(sql, values).first
-    return no_of_tickets['count']
-  end
+#   def buy_ticket(film_name, time)
+#
+#     film_result = Film.find(film_name)
+#
+#     if film_result != nil
+#       price = film_result.price.to_i
+#       if can_afford?(price) # check if customer can afford it
+#         # take money from customer
+#         reduce_funds(price)
+#         self.update()
+#         # add customer to tickets table
+#         ticket = Ticket.new({'customer_id' => @id, 'film_id' => film_result.id})
+#         ticket.save()
+#       end
+#     else
+#       p "Film not found!"
+#     end
+#   end
+#
+#   def tickets()
+#     sql = "SELECT COUNT(*) FROM tickets WHERE customer_id = $1"
+#     values = [@id]
+#     no_of_tickets = SqlRunner.run(sql, values).first
+#     return no_of_tickets['count']
+#   end
 end
