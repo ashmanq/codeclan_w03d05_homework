@@ -79,4 +79,11 @@ class Film
     return Film.new(films_result)
   end
 
+  def customer_count()
+    sql = "SELECT COUNT(*) FROM tickets WHERE film_id = $1"
+    values = [@id]
+    customers_result = SqlRunner.run(sql, values).first
+    return customers_result['count']
+  end
+
 end
