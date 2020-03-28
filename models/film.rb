@@ -88,7 +88,7 @@ class Film
     values = [title]
     film_result = SqlRunner.run(sql, values)
     return nil if film_result.first() == nil
-    return film_result.map {|film| Film.new(film)}
+    return film_result.map {|film| Film.new(film)}.first
   end
 
 

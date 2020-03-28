@@ -16,7 +16,7 @@ Cinema.delete_all()
 # Customers and Films arent associated with a cinema in the SQL table and
 # so have to be deleted seperately.
 Customer.delete_all()
-Film.delete_all()
+#Film.delete_all()
 #----------------------------------------------------------------------------
 
 # A cinema is created with 3 screens and 3 movies on offer.
@@ -27,6 +27,11 @@ cinema.add_screen('screen1')
 cinema.add_screen('screen2')
 cinema.add_screen('screen3')
 
+cinema.add_film('Human Centipede', 6.00)
+cinema.add_film('Spirited Away', 5.00)
+cinema.add_film('Ghost In The Shell', 6.00)
+
+
 # screen1 = Screen.new({'name'=>'screen1', 'cinema_id' => cinema.id})
 # screen1.save()
 # screen2 = Screen.new({'name'=>'screen2', 'cinema_id' => cinema.id})
@@ -34,12 +39,12 @@ cinema.add_screen('screen3')
 # screen3 = Screen.new({'name'=>'screen3', 'cinema_id' => cinema.id})
 # screen3.save()
 
-film1 = Film.new({'title' => 'Human Centipede', 'price' => '6.00'})
-film1.save()
-film2 = Film.new({'title' => 'Spirited Away', 'price' => '5.00'})
-film2.save()
-film3 = Film.new({'title' => 'Ghost In The Shell', 'price' => '6.00'})
-film3.save()
+# film1 = Film.new({'title' => 'Human Centipede', 'price' => '6.00'})
+# film1.save()
+# film2 = Film.new({'title' => 'Spirited Away', 'price' => '5.00'})
+# film2.save()
+# film3 = Film.new({'title' => 'Ghost In The Shell', 'price' => '6.00'})
+# film3.save()
 
 customer1 = Customer.new({ 'name' => 'Gabrielle Munro', 'funds' => 200.00})
 customer1.save()

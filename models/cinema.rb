@@ -76,8 +76,15 @@ class Cinema
   def remove_screen(name)
     screen = Screen.find(name)
     if screen!= nil
-      Screen.delete_by_id(screen.id)
+      screen.delete()
     end
+  end
+
+  def all_screens()
+    sql = "SELECT * from screens WHERE cinema_id = $1"
+    values = [@id]
+    result = SqlRunner.run(sql, values)
+    return result.map {|screen| Screen.new(screen)}
   end
 
   def add_film(title, price)
@@ -86,9 +93,9 @@ class Cinema
   end
 
   def remove_film(title)
-    film = Film.find(title)
+    film = Film.find_by_title(title)
     if film!= nil
-      Film.delete_by_id(film.id)
+      film.delete()
     end
   end
 
