@@ -44,10 +44,20 @@ class Screening
     values = [@screen_time, @film_id, @max_tickets, @id]
     SqlRunner.run(sql, values)
   end
+  def self.delete_all()
+    sql = "DELETE FROM screenings"
+    SqlRunner.run(sql)
+  end
 
   def delete()
     sql = "DELETE FROM screenings WHERE id = $1"
     values = [@id]
+    SqlRunner.run(sql, values)
+  end
+
+  def delete_by_id(id)
+    sql = "DELETE FROM screenings WHERE id = $1"
+    values = [id]
     SqlRunner.run(sql, values)
   end
 

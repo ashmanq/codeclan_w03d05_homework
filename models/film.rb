@@ -8,6 +8,7 @@ class Film
 
   def initialize(options)
     @id = options['id'].to_i if options['id']
+    @cinema_id = options['cinema_id']
     @title = options['title']
     @price = options['price']
   end
@@ -16,14 +17,15 @@ class Film
     sql = "INSERT INTO films
           (
             title,
-            price
+            price,
+            cinema_id
           )
           VALUES
           (
-            LOWER($1), $2
+            LOWER($1), $2, $3
           )
           RETURNING id"
-    values = [@title, @price]
+    values = [@title, @price, @cinema_id]
     film = SqlRunner.run(sql, values).first
     @id = film['id'].to_i
   end
@@ -32,18 +34,19 @@ class Film
     sql = "UPDATE films SET
            (
              title,
-             price
+             price,
+             cinema_id
             ) =
             (
-              LOWER($1), $2
+              LOWER($1), $2, $3
             )
-            WHERE id = $3"
-    values = [@title, @price, @id]
+            WHERE id = $4"
+    values = [@title, @price, @cinema_id, @id]
     SqlRunner.run(sql, values)
   end
 
   def self.all()
-    sql = "SELECT * from films"
+    sql = "SELECT * from films ORDER BY title"
     films = SqlRunner.run(sql)
     result = films.map {|film| Film.new(film)}
     return result
@@ -72,9 +75,17 @@ class Film
   end
 
   # Finds a film in the films table by searching for the id
-  def self.find(film_id)
+  def self.find_by_id(film_id)
     sql = "SELECT * FROM films WHERE id= $1"
     values = [film_id]
+    film_result = SqlRunner.run(sql, values)
+    return nil if film_result.first() == nil
+    return film_result.map {|film| Film.new(film)}
+  end
+
+  def self.find_by_title(title)
+    sql = "SELECT * FROM films WHERE title = LOWER($1)"
+    values = [title]
     film_result = SqlRunner.run(sql, values)
     return nil if film_result.first() == nil
     return film_result.map {|film| Film.new(film)}

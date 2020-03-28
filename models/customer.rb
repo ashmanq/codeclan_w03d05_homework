@@ -60,6 +60,12 @@ class Customer
     SqlRunner.run(sql, values)
   end
 
+  def delete_by_id(id)
+    sql = "DELETE FROM customers WHERE id = $1"
+    values = [id]
+    SqlRunner.run(sql, values)
+  end
+
   def films()
     sql = "SELECT films.* FROM films
            INNER JOIN tickets
