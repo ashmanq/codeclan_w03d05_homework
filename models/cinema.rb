@@ -5,11 +5,13 @@ require_relative('./customer')
 
 class Cinema
   attr_accessor :name
-  attr_reader :till, :id
+  attr_reader :till, :id, :films, :screens
 
   def initialize(options)
     @id = options['id'].to_i if options['id']
     @name = options['name']
+    @screens= []
+    @customers = []
     @till = options['till']
   end
 
@@ -68,15 +70,19 @@ class Cinema
     SqlRunner.run(sql)
   end
 
-  def add_screen(name)
-    screen = Screen.new({'name' => name, 'cinema_id' => @id})
+  def add_screen(name, max_seats)
+    screen = Screen.new({'name' => name,
+                         'max_seats'=> max_seats,
+                         'cinema_id' => @id})
     screen.save()
+    @screens.push(screen)
   end
 
   def remove_screen(name)
-    screen = Screen.find(name)
+    screen = Screen.find(name, @id)
     if screen!= nil
       screen.delete()
+      @screens.delete(screen)
     end
   end
 
@@ -85,6 +91,12 @@ class Cinema
     values = [@id]
     result = SqlRunner.run(sql, values)
     return result.map {|screen| Screen.new(screen)}
+  end
+
+  def find_screen(name)
+    screen = Screen.find(name, @id)
+    return if screen == nil
+    return screen
   end
 
   def add_film(title, price)
@@ -107,12 +119,25 @@ class Cinema
   end
 
   def add_customer(name, funds)
-
+    customer = Customer.new({'name' => name,
+                             'funds' => funds,
+                             'cinema_id' => @id})
+    customer.save()
+    @customers.push(customer)
   end
 
-  def remove_customer(name, funds)
-
+  def find_customer(customer_name)
+    customer = Customer.find_by_name(customer_name, @id)
+    return if customer == nil
+    return customer
   end
 
+  def remove_customer(name)
+    customer = find_customer(name)
+    if customer!= nil
+      customer.delete()
+      @customers.delete(customer)
+    end
+  end
 
 end

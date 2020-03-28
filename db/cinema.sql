@@ -20,6 +20,7 @@ CREATE TABLE screens (
 
 CREATE TABLE customers (
   id SERIAL PRIMARY KEY,
+  cinema_id INT REFERENCES cinemas(id) ON DELETE CASCADE,
   name VARCHAR(255),
   funds NUMERIC
 );

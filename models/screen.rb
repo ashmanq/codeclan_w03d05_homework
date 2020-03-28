@@ -6,12 +6,14 @@ require_relative('./ticket')
 
 class Screen
 
-attr_reader :name, :id
+attr_reader :name, :id, :max_seats
 
 def initialize(options)
   @id = options['id'].to_i if options['id']
   @name = options['name']
   @cinema_id = options['cinema_id']
+  @screenings = []
+  @max_seats = options['max_seats']
 end
 
 def save()
@@ -69,13 +71,27 @@ def self.delete_by_id(id)
   SqlRunner.run(sql, values)
 end
 
-def self.find(name)
-  sql = "SELECT * FROM screens WHERE name = LOWER($1)"
-  values = [name]
+def self.find(name, cinema_id)
+  sql = "SELECT * FROM screens
+         WHERE name = LOWER($1)
+         AND cinema_id = $2"
+  values = [name, cinema_id]
   result = SqlRunner.run(sql, values)
   return nil if result.first() == nil
   return result.map {|screen| Screen.new(screen)}.first
 end
+
+def add_screening(film_name, time)
+  film = Film.find_by_title(film_name)
+  if film != nil
+    screening = Screening.new('film_id' => film.id,
+                              'screen_time' => time,
+                              'cinema_id' => @id)
+    screening.save()
+    @screenings.push(screening)
+  end
+end
+
 
 
 end

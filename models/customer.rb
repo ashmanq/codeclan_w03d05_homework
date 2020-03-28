@@ -9,6 +9,7 @@ class Customer
   def initialize(options)
     @id = options['id'].to_i if options['id']
     @name = options['name']
+    @cinema_id = options['cinema_id']
     @funds = options['funds']
   end
 
@@ -16,14 +17,15 @@ class Customer
     sql = "INSERT INTO customers
           (
             name,
+            cinema_id,
             funds
           )
           VALUES
           (
-            LOWER($1), $2
+            LOWER($1), $2, $3
           )
           RETURNING id"
-    values = [@name, @funds]
+    values = [@name, @cinema_id, @funds]
     customer = SqlRunner.run(sql, values).first
     @id = customer['id'].to_i
   end
@@ -32,13 +34,14 @@ class Customer
     sql = "UPDATE customers SET
            (
              name,
+             cinema_id,
              funds
             ) =
             (
-              LOWER($1), $2
+              LOWER($1), $2, $3
             )
-            WHERE id = $3"
-    values = [@name, @funds, @id]
+            WHERE id = $4"
+    values = [@name, @cinema_id, @funds, @id]
     SqlRunner.run(sql, values)
   end
 
@@ -116,5 +119,16 @@ class Customer
     values = [@id]
     no_of_tickets = SqlRunner.run(sql, values).first
     return no_of_tickets['count']
+  end
+
+  def self.find_by_name(name, cinema_id)
+    sql = "SELECT * FROM customers
+           WHERE name = LOWER($1)
+           AND cinema_id = $2"
+    values = [name, cinema_id]
+    customer_result = SqlRunner.run(sql, values)
+    p customer_result.map {|customer| Customer.new(customer)}.first
+    return nil if customer_result.first() == nil
+    return customer_result.map {|customer| Customer.new(customer)}.first
   end
 end

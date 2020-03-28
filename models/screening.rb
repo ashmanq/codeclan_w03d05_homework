@@ -8,6 +8,7 @@ class Screening
     @id = options['id'].to_i if options['id']
     @screen_time = options['screen_time']
     @film_id = options['film_id']
+    @screen_id = options['screen_id']
     @max_tickets = options['max_tickets']
   end
 
@@ -16,14 +17,15 @@ class Screening
             (
               screen_time,
               film_id,
+              screen_id,
               max_tickets
               )
               VALUES
               (
-                $1, $2, $3
+                $1, $2, $3, $4
               )
               RETURNING id"
-      values = [@screen_time, @film_id, @max_tickets]
+      values = [@screen_time, @film_id, @screen_id, @max_tickets]
       screening = SqlRunner.run(sql, values).first
       @id = screening['id'].to_i
   end
@@ -33,15 +35,16 @@ class Screening
            (
              screen_time,
              film_id,
+             screen_id,
              max_tickets
            )
            =
           (
-            $1, $2, $3
+            $1, $2, $3, $4
           )
-          WHERE id = $4"
+          WHERE id = $5"
 
-    values = [@screen_time, @film_id, @max_tickets, @id]
+    values = [@screen_time, @film_id, @screen_id, @max_tickets, @id]
     SqlRunner.run(sql, values)
   end
   def self.delete_all()
